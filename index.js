@@ -7,7 +7,6 @@ const http = _http_base.http;
 const configParser = _http_base.configParser;
 const PullTimer = _http_base.PullTimer;
 const notifications = _http_base.notifications;
-const MQTTClient = _http_base.MQTTClient;
 const Cache = _http_base.Cache;
 const utils = _http_base.utils;
 
@@ -19,7 +18,7 @@ module.exports = function (homebridge) {
 
     api = homebridge;
 
-    homebridge.registerAccessory("homebridge-http-temperature-sensor", "HTTP-TEMPERATURE", HTTP_TEMPERATURE);
+    homebridge.registerAccessory("homebridge-ambientweather-pws-pull", "HTTP-TEMPERATURE", HTTP_TEMPERATURE);
 };
 
 const TemperatureUnit = Object.freeze({
@@ -27,10 +26,14 @@ const TemperatureUnit = Object.freeze({
    Fahrenheit: "fahrenheit"
 });
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
 function HTTP_TEMPERATURE(log, config) {
     this.log = log;
     this.name = config.name;
-    this.debug = config.debug || false;
+    this.debug = config.debug || true;
 
     if (config.getUrl) {
         try {
@@ -54,12 +57,12 @@ function HTTP_TEMPERATURE(log, config) {
     }
 
     this.statusCache = new Cache(config.statusCache, 0);
-    this.statusPattern = /(-?[0-9]{1,3}(\.[0-9])?)/;
+    this.jsonField = 'tempf';
     try {
-        if (config.statusPattern)
-            this.statusPattern = configParser.parsePattern(config.statusPattern);
+        if (config.jsonField)
+            this.jsonField = (configParser.parsePattern(config.jsonField).replace('/',''));
     } catch (error) {
-        this.log.warn("Property 'statusPattern' was given in an unsupported type. Using default one!");
+        this.log.warn("Property 'jsonField' was given in an unsupported type. Using default one!");
     }
     this.patternGroupToExtract = 1;
     if (config.patternGroupToExtract) {
@@ -89,25 +92,6 @@ function HTTP_TEMPERATURE(log, config) {
     /** @namespace config.notificationID */
     notifications.enqueueNotificationRegistrationIfDefined(api, log, config.notificationID, config.notificationPassword, this.handleNotification.bind(this));
 
-    /** @namespace config.mqtt */
-    if (config.mqtt) {
-        let options;
-        try {
-            options = configParser.parseMQTTOptions(config.mqtt);
-        } catch (error) {
-            this.log.error("Error occurred while parsing MQTT property: " + error.message);
-            this.log.error("MQTT will not be enabled!");
-        }
-
-        if (options) {
-            try {
-                this.mqttClient = new MQTTClient(this.homebridgeService, options, this.log);
-                this.mqttClient.connect();
-            } catch (error) {
-                this.log.error("Error occurred creating MQTT client: " + error.message);
-            }
-        }
-    }
 }
 
 HTTP_TEMPERATURE.prototype = {
@@ -124,8 +108,8 @@ HTTP_TEMPERATURE.prototype = {
         const informationService = new Service.AccessoryInformation();
 
         informationService
-            .setCharacteristic(Characteristic.Manufacturer, "Andreas Bauer")
-            .setCharacteristic(Characteristic.Model, "HTTP Temperature Sensor")
+            .setCharacteristic(Characteristic.Manufacturer, "Ambient Weather")
+            .setCharacteristic(Characteristic.Model, "Ambient Weather PWS API")
             .setCharacteristic(Characteristic.SerialNumber, "TS01")
             .setCharacteristic(Characteristic.FirmwareRevision, packageJSON.version);
 
@@ -173,7 +157,9 @@ HTTP_TEMPERATURE.prototype = {
             else {
                 let temperature;
                 try {
-                    temperature = utils.extractValueFromPattern(this.statusPattern, body, this.patternGroupToExtract);
+                    const jsonbody = JSON.parse(body);
+                    //temperature = jsonutils.extractValueFromPattern(this.jsonField, body, this.patternGroupToExtract);
+                    temperature = jsonbody[0].lastData[this.jsonField]
                 } catch (error) {
                     this.log("getTemperature() error occurred while extracting temperature from body: " + error.message);
                     callback(new Error("pattern error"));
@@ -184,7 +170,7 @@ HTTP_TEMPERATURE.prototype = {
                     temperature = (temperature - 32) / 1.8;
 
                 if (this.debug)
-                    this.log("Temperature is currently at %s", temperature);
+                    this.log("Temperature is currently at %s for %s" , temperature, this.jsonField);
 
                 this.statusCache.queried();
                 callback(null, temperature);
