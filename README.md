@@ -1,6 +1,6 @@
 # homebridge-ambientweather-pws-pull Plugin
 Forked from https://github.com/homebridge/homebridge this HomeBridge plugin was modified to intereact with Ambient Weathers API and 
-parse json output of a specific temprature sensor. Specfically so I can send pool temp from my pool to HomeKit.
+parse json output of a specific temprature sensor. Specfically needed it to send temp from my pool to HomeKit.
 
 
 ## Installation
