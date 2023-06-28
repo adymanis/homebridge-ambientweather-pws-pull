@@ -1,11 +1,11 @@
 # homebridge-ambientweather-pws-pull Plugin
+Forked from https://github.com/homebridge/homebridge this HomeBridge plugin was modified to intereact with Ambient Weathers API and 
+parse json output of a specific temprature sensor. Specfically so I can send pool temp from my pool to HomeKit.
 
-This [Homebridge](https://github.com/nfarina/homebridge) plugin can be used integrate your temperature sensor which has a 
-http api into HomeKit.
 
 ## Installation
 
-First of all you need to have [Homebridge](https://github.com/nfarina/homebridge) installed. Refer to the repo for 
+First of all you need to have [Homebridge] installed. Refer to the repo for 
 instructions.  
 Then run the following command to install `homebridge-ambientweather-pws-pull`
 
@@ -126,43 +126,6 @@ Below is an example of an urlObject containing the basic properties:
   }
 }
 ```
-
-
-##### Basic configuration options:
-
-* `host` \<string\> **required**: Defines the host of the mqtt broker.
-* `port` \<number\> **optional** \(Default: **1883**\): Defines the port of the mqtt broker.
-* `credentials` \<object\> **optional**: Defines the credentials used to authenticate with the mqtt broker.
-    * `username` \<string\> **required**
-    * `password` \<string\> **optional**
-- `subscriptions` \<object | array\> **required**: Defines an array (or one single object) of subscriptions.
-    - `topic` \<string\> **required**: Defines the topic to subscribe to.
-    - `characteristic` \<string\> **required**: Defines the characteristic this subscription updates.
-    - `messagePattern` \<string\> **optional**: Defines a regex pattern. If `messagePattern` is not specified the 
-        message received will be used as value. If the characteristic expects a boolean value it is tested if the 
-        specified regex is contained in the received message. Otherwise the pattern is matched against the message 
-        and the data from regex group can be extracted using the given `patternGroupToExtract`.
-    - `patternGroupToExtract` \<number\> **optional** \(Default: **1**\): Defines the regex group of which data is 
-        extracted.
-
-##### Advanced configuration options:
-
-* `protocol` \<string\> **optional** \(Default: **"mqtt"**\): Defines protocol used to connect to the mqtt broker
-* `qos` \<number\> **optional** \(Default: **1**\): Defines the Quality of Service (Notice, the QoS of the publisher 
-           must also be configured accordingly).  
-           In contrast to most implementations the default value is **1**.
-    * `0`: 'At most once' - the message is sent only once and the client and broker take no additional steps to 
-                            acknowledge delivery (fire and forget).
-    * `1`: 'At least once' - the message is re-tried by the sender multiple times until acknowledgement is 
-                            received (acknowledged delivery).
-    * `2`: 'Exactly once' - the sender and receiver engage in a two-level handshake to ensure only one copy of the 
-                            message is received (assured delivery).
-* `clientId` \<string\> **optional** \(Default: `'mqttjs_' + Math.random().toString(16).substr(2, 8)`\): Defines clientId
-* `keepalive` \<number\> **optional** \(Default: **60**\): Time in seconds to send a keepalive. Set to 0 to disable.
-* `clean` \<boolean\> **optional** \(Default: **true**\): Set to false to receive QoS 1 and 2 messages while offline.
-* `reconnectPeriod` \<number\> **optional** \(Default: **1000**\): Time in milliseconds after which a reconnect is tried.
-* `connectTimeout` \<number\> **optional** \(Default: **30000**\): Time in milliseconds the client waits until the 
-        CONNECT needs to be acknowledged (CONNACK).
 
 **Available characteristics (for the POST body)**
 

@@ -60,16 +60,9 @@ function HTTP_TEMPERATURE(log, config) {
     this.jsonField = 'tempf';
     try {
         if (config.jsonField)
-            this.jsonField = (configParser.parsePattern(config.jsonField).replace('/',''));
+            this.jsonField = config.jsonField.replace('/','');
     } catch (error) {
         this.log.warn("Property 'jsonField' was given in an unsupported type. Using default one!");
-    }
-    this.patternGroupToExtract = 1;
-    if (config.patternGroupToExtract) {
-        if (typeof config.patternGroupToExtract === "number")
-            this.patternGroupToExtract = config.patternGroupToExtract;
-        else
-            this.log.warn("Property 'patternGroupToExtract' must be a number! Using default value!");
     }
 
     this.homebridgeService = new Service.TemperatureSensor(this.name);
@@ -110,7 +103,7 @@ HTTP_TEMPERATURE.prototype = {
         informationService
             .setCharacteristic(Characteristic.Manufacturer, "Ambient Weather")
             .setCharacteristic(Characteristic.Model, "Ambient Weather PWS API")
-            .setCharacteristic(Characteristic.SerialNumber, "TS01")
+            .setCharacteristic(Characteristic.SerialNumber, "AW_PWS01")
             .setCharacteristic(Characteristic.FirmwareRevision, packageJSON.version);
 
         return [informationService, this.homebridgeService];
@@ -158,7 +151,6 @@ HTTP_TEMPERATURE.prototype = {
                 let temperature;
                 try {
                     const jsonbody = JSON.parse(body);
-                    //temperature = jsonutils.extractValueFromPattern(this.jsonField, body, this.patternGroupToExtract);
                     temperature = jsonbody[0].lastData[this.jsonField]
                 } catch (error) {
                     this.log("getTemperature() error occurred while extracting temperature from body: " + error.message);

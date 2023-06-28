@@ -1,7 +1,7 @@
 {
   "name": "homebridge-ambientweather-pws-pull",
-  "version": "1.0.0",
-  "description": "Http temperature sensor for Homebridge",
+  "version": "1.0.2",
+  "description": "Ambient Weather PWS temperature sensor for Homebridge",
   "license": "ISC",
   "keywords": [
     "homebridge-plugin"
@@ -11,10 +11,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Supereg/homebridge-http-temperature-sensor.git"
+    "url": "git+https://github.com/adymanis/homebridge-ambientweather-pws-pull.git"
   },
   "bugs": {
-    "url": "https://github.com/Supereg/homebridge-http-temperature-sensor/issues"
+    "url": "https://github.com/adymanis/homebridge-ambientweather-pws-pull/issues"
   },
   "engines": {
     "node": ">=10.17.0",
@@ -26,7 +26,7 @@
   "devDependencies": {
     "homebridge": "^1.3.5"
   },
-  "homepage": "https://github.com/Supereg/homebridge-http-temperature-sensor#readme",
+  "homepage": "https://github.com/adymanis/homebridge-ambientweather-pws-pull#readme",
   "main": "index.js",
   "author": "Alex"
 }
