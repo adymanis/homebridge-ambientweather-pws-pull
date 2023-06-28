@@ -1,4 +1,4 @@
-# homebridge-http-temperature-sensor Plugin
+# homebridge-ambientweather-pws-pull Plugin
 
 This [Homebridge](https://github.com/nfarina/homebridge) plugin can be used integrate your temperature sensor which has a 
 http api into HomeKit.
@@ -7,30 +7,22 @@ http api into HomeKit.
 
 First of all you need to have [Homebridge](https://github.com/nfarina/homebridge) installed. Refer to the repo for 
 instructions.  
-Then run the following command to install `homebridge-http-temperature-sensor`
+Then run the following command to install `homebridge-ambientweather-pws-pull`
 
 ```
-sudo npm install -g homebridge-http-temperature-sensor
+sudo npm install -g homebridge-ambientweather-pws-pull
 ```
 
 ## Updating the temperature in HomeKit
 
 The _'CurrentTemperature'_ characteristic has the permission to `notify` the HomeKit controller of state 
-changes. `homebridge-http-temperature-sensor` supports two concepts to send temperature changes to HomeKit.
+changes. `homebridge-ambientweather-pws-pull` supports two concepts to send temperature changes to HomeKit.
 
 ### The 'pull' way:
 
-The 'pull' way is probably the easiest to set up and supported in every scenario. `homebridge-http-temperature-sensor` 
+The 'pull' way is probably the easiest to set up and supported in every scenario. `homebridge-ambientweather-pws-pull` 
 requests the temperature of the sensor in an specified interval (pulling) and sends the value to HomeKit.  
 Look for `pullInterval` in the list of configuration options if you want to configure it.
-
-
-#### Using 'homebridge-http-notification-server':
-
-For those of you who are developing the http device by themselves I developed a pretty simple 'protocol' based on http 
-to send push-updates.   
-How to implement the protocol into your http device can be read in the chapter 
-[**Notification Server**](#notification-server)
 
 
 ## Configuration
@@ -171,40 +163,6 @@ Below is an example of an urlObject containing the basic properties:
 * `reconnectPeriod` \<number\> **optional** \(Default: **1000**\): Time in milliseconds after which a reconnect is tried.
 * `connectTimeout` \<number\> **optional** \(Default: **30000**\): Time in milliseconds the client waits until the 
         CONNECT needs to be acknowledged (CONNACK).
-
-
-## Notification Server
-
-`homebridge-http-temperature-sensor` can be used together with 
-[homebridge-http-notification-server](https://github.com/Supereg/homebridge-http-notification-server) in order to receive
-updates when the state changes at your external program. For details on how to implement those updates and how to 
-install and configure `homebridge-http-notification-server`, please refer to the 
-[README](https://github.com/Supereg/homebridge-http-notification-server) of the repository.
-
-Down here is an example on how to configure `homebridge-http-temperature-sensor` to work with your implementation of the 
-`homebridge-http-notification-server`.
-
-```json
-{
-    "accessories": [
-        {
-          "accessory": "HTTP-TEMPERATURE",
-          "name": "Temperature Sensor",
-          
-          "notificationID": "my-temperature-sensor",
-          "notificationPassword": "superSecretPassword",
-          
-          "getUrl": "http://localhost/api/getTemperature"
-        }   
-    ]
-}
-```
-
-* `notificationID` is an per Homebridge instance unique id which must be included in any http request.  
-* `notificationPassword` is **optional**. It can be used to secure any incoming requests.
-
-To get more details about the configuration have a look at the 
-[README](https://github.com/Supereg/homebridge-http-notification-server).
 
 **Available characteristics (for the POST body)**
 
