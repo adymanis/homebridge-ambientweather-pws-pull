@@ -24,21 +24,6 @@ The 'pull' way is probably the easiest to set up and supported in every scenario
 requests the temperature of the sensor in an specified interval (pulling) and sends the value to HomeKit.  
 Look for `pullInterval` in the list of configuration options if you want to configure it.
 
-### The 'push' way:
-
-When using the 'push' concept, the http device itself sends the updated value to `homebridge-http-temperature-sensor` 
-whenever values change. This is more efficient as the new value is updated instantly and 
-`homebridge-http-temperature-sensor` does not need to make needless requests when the value didn't actually change.  
-However because the http device needs to actively notify the `homebridge-http-temperature-sensor` there is more 
-work needed to implement this method into your http device. 
-
-#### Using MQTT:
-
-MQTT (Message Queuing Telemetry Transport) is a protocol widely used by IoT devices. IoT devices can publish messages
-on a certain topic to the MQTT broker which then sends this message to all clients subscribed to the specified topic.
-In order to use MQTT you need to setup a broker server ([mosquitto](https://github.com/eclipse/mosquitto) is a solid 
-open source MQTT broker running perfectly on a device like the Raspberry Pi) and then instruct all clients to 
-publish/subscribe to it.
 
 #### Using 'homebridge-http-notification-server':
 
@@ -66,21 +51,12 @@ The configuration can contain the following properties:
 
 ##### Advanced configuration options:
 
-* `statusPattern` \<string\> **optional** \(Default: **"(-?[0-9]{1,3}(\.[0-9]))"**): Defines a regex pattern with which the 
-    temperature is extracted from the body of the http response from the `getUrl`. The group which should
-    be extracted can be configured with the `patternGroupToExtract` property.  
-    [More about regex pattern](https://www.w3schools.com/jsref/jsref_obj_regexp.asp).
-* `patternGroupToExtract` \<number\> **optional** \(Default: **1**\): Defines the regex group of which the temperature 
-    is extracted.
 * `statusCache` \<number\> **optional** \(Default: **0**\): Defines the amount of time in milliseconds a queried value 
    of the _CurrentTemperature_ characteristic is cached before a new request is made to the http device.  
    Default is **0** which indicates no caching. A value of **-1** will indicate infinite caching.
 
 - `pullInterval` \<integer\> **optional**: The property expects an interval in **milliseconds** in which the plugin 
     pulls updates from your http device. For more information read [pulling updates](#the-pull-way).
-
-* `mqtt` \<[mqttObject](#mqttobject)\> **optional**: Defines all properties used for mqtt connection ([More on MQTT](#using-mqtt)).  
-    For configuration see [mqttObject](#mqttobject).
 
 - `debug` \<boolean\> **optional**: Enable debug mode and write more logs.
 
@@ -91,9 +67,9 @@ Both configs can be used for a basic plugin configuration.
     "accessories": [
         {
           "accessory": "HTTP-TEMPERATURE",
-          "name": "Temperature Sensor",
-          
-          "getUrl": "http://localhost/api/getTemperature"
+          "name": "Pool Temperature",
+          "getUrl": "https://rt.ambientweather.net/v1/devices?applicationKey=XXXXXX&apiKey=XXXXXX",
+          "jsonField": "temp1f"
         }   
     ]
 }
@@ -106,7 +82,8 @@ Both configs can be used for a basic plugin configuration.
           "name": "Temperature Sensor",
           
           "getUrl": {
-            "url": "http://localhost/api/getTemperature",
+            "url": "https://rt.ambientweather.net/v1/devices?applicationKey=XXXXXX&apiKey=XXXXXX",
+            "jsonField": "temp1f",
             "method": "GET"
           }
         }   
@@ -158,9 +135,6 @@ Below is an example of an urlObject containing the basic properties:
 }
 ```
 
-#### MQTTObject
-
-A mqttObject can have the following properties:
 
 ##### Basic configuration options:
 
@@ -198,28 +172,6 @@ A mqttObject can have the following properties:
 * `connectTimeout` \<number\> **optional** \(Default: **30000**\): Time in milliseconds the client waits until the 
         CONNECT needs to be acknowledged (CONNACK).
 
-**Note:** Updating values over mqtt is currently only supported for the default unit (celsius).
-
-Below is an example of an mqttObject containing the basic properties for a temperature service:
-```json
-{
-  "host": "127.0.0.1",
-  "port": "1883",
-  
-  "credentials": {
-    "username": "yourUsername",
-    "password": "yourPassword"
-  },
-  
-  "subscriptions": [
-    {
-      "topic": "your/topic/here",
-      "characteristic": "CurrentTemperature",
-      "messagePattern": "(-?[0-9]{1,3}(\\.[0-9]))"
-    }
-  ]
-}
-```
 
 ## Notification Server
 
