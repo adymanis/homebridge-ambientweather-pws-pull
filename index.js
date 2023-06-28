@@ -125,7 +125,7 @@ HTTP_TEMPERATURE.prototype = {
 
         let value = body.value;
         if (body.characteristic === "CurrentTemperature" && this.unit === TemperatureUnit.Fahrenheit)
-            value = (value - 32) / 1.8;
+            value = (value - 32) * 5/9;
 
         if (this.debug)
             this.log("Updating '" + body.characteristic + "' to new value: " + body.value);
@@ -167,10 +167,10 @@ HTTP_TEMPERATURE.prototype = {
                 }
 
                 if (this.unit === TemperatureUnit.Fahrenheit)
-                    temperature = (temperature - 32) / 1.8;
+                    temperature = (temperature - 32) * 5/9;
 
                 if (this.debug)
-                    this.log("Temperature is currently at %s for %s" , temperature, this.jsonField);
+                    this.log("Temperature is currently at %s celsius for %s" , temperature, this.jsonField);
 
                 this.statusCache.queried();
                 callback(null, temperature);
