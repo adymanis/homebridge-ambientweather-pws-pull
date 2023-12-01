@@ -151,7 +151,11 @@ HTTP_TEMPERATURE.prototype = {
                 let temperature;
                 try {
                     const jsonbody = JSON.parse(body);
-                    temperature = jsonbody[0].lastData[this.jsonField]
+                    jsonbody.forEach( (obj) => {
+                        if ( Object.keys(obj.lastData).includes(this.jsonField) ){
+                            temperature = obj.lastData[this.jsonField];
+                        }
+                    });
                 } catch (error) {
                     this.log("getTemperature() error occurred while extracting temperature from body: " + error.message);
                     callback(new Error("pattern error"));
